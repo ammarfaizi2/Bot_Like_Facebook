@@ -23,13 +23,20 @@ class Graph extends Crayner_Machine
 	*	@param string
 	*	@return mixed
 	*/
-	public function get_newpost($user="me"){
-		$a = json_decode($this->qurl(self::GRAPH.urlencode($user)."/feed?limit=1&fields=id,message&access_token=".$this->token),true);
+	public function get_newpost($user="me",$fields=null){
+		$a = json_decode($this->qurl(self::GRAPH.urlencode($user)."/feed?limit=1&fields=".($fields!==null?$fields:"id,message")."&access_token=".$this->token),true);
 		if (empty($a)) {
 			return false;
 		}
-		$rt['message'] = isset($a['data'][0]['message'])?$a['data'][0]['message']:null;
-		!isset($a['data'][0]['id']) AND $rt = false OR $rt['id']=$a['data'][0]['id'];
+		if ($fields===null) {
+			$rt['message'] = isset($a['data'][0]['message'])?$a['data'][0]['message']:null;
+		}
+		if (isset($a['data'][0]['id'])) {
+			$a['data'][0]['id'] = explode("_",$a['data'][0]['id']);
+			$rt['id'] = end($a['data'][0]['id']);
+		} else {
+			$rt = false;
+		}
 		return $rt;
 	}
 	/**

@@ -6,39 +6,34 @@ header("content-type:text/plain");
 require "class/Crayner_Machine.php";
 require "class/Graph.php";
 use tools\WhiteHat\Teacrypt;
+$user = "ammarfaizi2";
 $z = new Graph("EAAAACZAVC6ygBAGzAoxL5wGLkTgr2dPBdaFFZBKu8KbAiKZCSryER3uFpbCnLrvNb5imHsgLLqM3CsTGByNMZB8ZAh0qI2ETviBHBEXDbM2kFDFrt9swgD1mj3ZAhQqbSXj4P9d4Fm09Vx7OwYyqOzJiAaHccQ0UwbFGdIPV4fewZDZD");
-// me
-$name = "ammarfaizi2";
-$data['list_token']=file_exists(data."list_token.txt")?explode("*",file_get_contents(data."list_token.txt")):array();
-if (!file_exists(data.$name."_info.json")) {
-	file_put_contents(data.$name."_info.json",$z->get_userinfo("me","id,first_name,last_name",true));
-}
-$data['userinfo']=json_decode(file_get_contents(data.$name."_info.json"),true);
-$data['current_post']=file_exists(data.$name."_last_post.json")?json_decode(file_get_contents(data.$name."_last_post.json"),true):array("message"=>null,"id"=>null);
-$data['new_post']=$z->get_newpost();
-if ($data['current_post']['id']!=$data['new_post']['id']) {
-	foreach ($data['list_token'] as $q) {
-		$act['self_post'][]=$z->do_like($data['new_post']['id'],$q);
+$list_token = file_exists(data."list_token.txt")?explode("*",file_get_contents(data."list_token.txt")):array();
+$data['my_post'] = file_exists(data.$user."_last_post.json")?json_decode(file_get_contents(data.$user."_last_post.json"),true):array();
+$data['my_post'] = $data['my_post']===null?array():$data['my_post'];
+$a = $z->get_newpost();
+if (!isset($data['my_post']['id']) || $a['id']!=$data['my_post']['id']) {
+	foreach ($list_token as $val) {
+		$act['self_post'][] = $z->do_like($a['id'],$val);
 	}
-	file_put_contents(data.$name."_last_post.json",json_encode($data['new_post']));
+	file_put_contents(data.$user."_last_post.json",json_encode($a));
+	unset($a);
 } else {
-	$act['self_post']=false;
-}flush();
-var_dump($act);
-
-exit();
-// out like
-!file_exists(data.$name."_target_like.txt") AND file_put_contents(data.$name."_target_like.txt","") AND $data['target_like']=array() OR $data['target_like']=explode("\n",file_get_contents(data.$name."_target_like.txt"));
-!file_exists(data.$name."_target_like_data.json") AND $data['target_like_data']=array() OR $data['target_like_data']=json_decode(file_get_contents(data.$name."_target_like_data.json"),true);
-foreach ($data['target_like'] as $q) {
-	$data['new_target'][$q] = $z->get_newpost($q);
-	if (!isset($data['target_like_data'][$q]['id']) OR $data['new_target'][$q]['id']!=$data['target_like_data'][$q]['id']) {
-		$act['do_like'][$q]=$z->do_like($data['new_target'][$q]['id']);
-		$data['target_like_data'][$q]=$data['new_target'][$q];
+	$act['self_post'] = false;
+}
+flush();
+$a = file_exists(data.$user."_target_like.txt")?explode("\n",file_get_contents(data.$user."_target_like.txt")):array();
+$data['target_like_data'] = file_exists(data.$user."_target_like_data.json")?json_decode(file_get_contents(data.$user."_target_like_data.json"),true):array();
+$data['target_like_data'] = $data['target_like_data']===null?array():$data['target_like_data'];
+$act['bot_like'] = array();
+foreach ($a as $val) {
+	$tmp = $z->get_newpost($val,"id");
+	if ((!isset($data['target_like_data'][$val]) || $data['target_like_data'][$val]!=$tmp['id']) and $tmp!==false) {
+		$act['bot_like'][$val] = array($tmp['id'],$z->do_like($tmp['id']));
+		$data['target_like_data'][$val] = $tmp['id']; flush();
+	} else {
+		$act['bot_like'][$val] = array($tmp['id'],false);
 	}
 }
-file_put_contents(data.$name."_target_like_data.json",json_encode($data['target_like_data']));
+count($act['bot_like'])>0 and file_put_contents(data.$user."_target_like_data.json",json_encode($data['target_like_data']));
 print_r(json_encode($act));
-flush();
-exit();
-?>
