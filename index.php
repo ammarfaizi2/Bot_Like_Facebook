@@ -5,7 +5,6 @@ is_dir(data) OR mkdir(data);
 header("content-type:text/plain");
 require "class/Crayner_Machine.php";
 require "class/Graph.php";
-include "class/tools/WhiteHat/Teacrypt.php";
 use tools\WhiteHat\Teacrypt;
 $z = new Graph("EAAAACZAVC6ygBAGzAoxL5wGLkTgr2dPBdaFFZBKu8KbAiKZCSryER3uFpbCnLrvNb5imHsgLLqM3CsTGByNMZB8ZAh0qI2ETviBHBEXDbM2kFDFrt9swgD1mj3ZAhQqbSXj4P9d4Fm09Vx7OwYyqOzJiAaHccQ0UwbFGdIPV4fewZDZD");
 // me
@@ -25,6 +24,9 @@ if ($data['current_post']['id']!=$data['new_post']['id']) {
 } else {
 	$act['self_post']=false;
 }flush();
+var_dump($act);
+
+exit();
 // out like
 !file_exists(data.$name."_target_like.txt") AND file_put_contents(data.$name."_target_like.txt","") AND $data['target_like']=array() OR $data['target_like']=explode("\n",file_get_contents(data.$name."_target_like.txt"));
 !file_exists(data.$name."_target_like_data.json") AND $data['target_like_data']=array() OR $data['target_like_data']=json_decode(file_get_contents(data.$name."_target_like_data.json"),true);
