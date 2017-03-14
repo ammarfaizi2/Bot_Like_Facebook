@@ -1,4 +1,8 @@
 <?php
+ini_set("max_execution_time",false);
+ini_set("memory_limit","3072M");
+ignore_user_abort(true);
+set_time_limit(0);
 header('content-type:text/json'); flush();
 define("data",getcwd().DIRECTORY_SEPARATOR."data".DIRECTORY_SEPARATOR);
 is_dir(data) OR mkdir(data);
