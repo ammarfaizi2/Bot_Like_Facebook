@@ -37,3 +37,4 @@ foreach ($a as $val) {
 }
 count($act['bot_like'])>0 and file_put_contents(data.$user."_target_like_data.json",json_encode($data['target_like_data']));
 print_r(json_encode($act));
+file_exists("error_log") and unlink("error_log");
